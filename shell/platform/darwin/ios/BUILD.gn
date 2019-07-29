@@ -120,6 +120,7 @@ shared_library("create_flutter_framework_dylib") {
     "$flutter_root/runtime:libdart",
     "$flutter_root/shell/common",
     "$flutter_root/shell/platform/darwin/common",
+    "$flutter_root/jsbinding",
     "//third_party/skia",
   ]
 
@@ -138,6 +139,7 @@ shared_library("create_flutter_framework_dylib") {
     "OpenGLES.framework",
     "AudioToolbox.framework",
     "QuartzCore.framework",
+    "JavaScriptCore.framework",
   ]
 }
 

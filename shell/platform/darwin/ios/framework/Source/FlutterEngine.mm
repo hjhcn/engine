@@ -332,6 +332,15 @@
     settings.advisory_script_entrypoint = std::string("main");
     settings.advisory_script_uri = std::string("main.dart");
   }
+    
+  //Kraken: hook实现，JS环境初始化
+  settings.root_isolate_prepare_callback = []() {
+    Kraken::GBridge::sharedInstance()->Init();
+  };
+  //Kraken: hook实现，业务代码执行
+  settings.root_isolate_runapp_callback = []() {
+    Kraken::GBridge::sharedInstance()->evaluate("kraken.setCallback(()=>{kraken.log('callback call')});kraken.runApp();");
+  };
 
   const auto threadLabel = [NSString stringWithFormat:@"%@.%zu", _labelPrefix, shellCount++];
   FML_DLOG(INFO) << "Creating threadHost for " << threadLabel.UTF8String;
