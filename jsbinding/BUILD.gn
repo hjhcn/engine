@@ -1,0 +1,19 @@
+
+source_set("jsbinding") {
+  sources = [
+    "GBridge.cpp",
+    "GBridge.h",
+    "GBinding.cpp",
+    "GBinding.h",
+    "GBindingGlobal.cpp",
+    "GBindingGlobal.h",
+    "GBindingConvertor.cpp",
+    "GBindingConvertor.h",
+  ]
+
+  public_configs = [ "$flutter_root:config" ]
+
+  deps = [
+    "//third_party/tonic",
+  ]
+}

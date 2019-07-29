@@ -120,6 +120,11 @@ struct Settings {
   // call is made.
   fml::closure root_isolate_shutdown_callback;
   fml::closure isolate_shutdown_callback;
+
+  //Kraken: 增加prepare/runapp分别在Dart初始化和执行main时回调，调用逻辑在dart_isolate.cc中
+  fml::closure root_isolate_prepare_callback;
+  fml::closure root_isolate_runapp_callback;
+
   // The callback made on the UI thread in an isolate scope when the engine
   // detects that the framework is idle. The VM also uses this time to perform
   // tasks suitable when idling. Due to this, embedders are still advised to be
