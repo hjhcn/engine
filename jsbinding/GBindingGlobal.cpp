@@ -59,8 +59,8 @@ JSValueRef func_log(JSContextRef ctx, JSObjectRef function, JSObjectRef object, 
 
 JSValueRef func_runApp(JSContextRef ctx, JSObjectRef function, JSObjectRef object, size_t argc, const JSValueRef argv[], JSValueRef *exception ) {
   
-  Dart_Handle library = Dart_LookupLibrary(tonic::ToDart("package:flutter_app/main.dart"));
-  tonic::LogIfError(tonic::DartInvokeField(library, "__runApp", {}));
+  Dart_Handle library = Dart_LookupLibrary(tonic::ToDart("package:kraken/main.dart"));
+  tonic::LogIfError(tonic::DartInvokeField(library, "runKraken", {}));
   
   return JSValueMakeUndefined(ctx);
 }

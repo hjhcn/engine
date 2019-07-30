@@ -340,7 +340,7 @@
   };
   //Kraken: hook实现，业务代码执行
   settings.root_isolate_runapp_callback = []() {
-    Kraken::GBridge::sharedInstance()->evaluate("kraken.setCallback(()=>{kraken.log('callback call')});kraken.runApp();");
+    Kraken::GBridge::sharedInstance()->evaluate("kraken.setCallback(()=>{kraken.log('---callback call----')});kraken.runApp();");
   };
 
   const auto threadLabel = [NSString stringWithFormat:@"%@.%zu", _labelPrefix, shellCount++];
