@@ -1,6 +1,5 @@
 Kraken Engine
 ==============
-# Kraken Engine开发和编译环境搭建
 本仓库Fork自Flutter Engine [GitHub - flutter/engine: The Flutter engine](https://github.com/flutter/engine)，为Kraken项目接入JS2Dart增加Engine生命周期hook以及Dart API hook。
 
 # 开发环境搭建
