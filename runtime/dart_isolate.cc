@@ -453,7 +453,7 @@ bool DartIsolate::MarkIsolateRunnable() {
 
 FML_WARN_UNUSED_RESULT
 static bool InvokeMainEntrypoint(Dart_Handle user_entrypoint_function,
-                                 Dart_Handle args
+                                 Dart_Handle args,
                                  const Settings& settings/* Kraken: 增加settings参数 */) {
   if (tonic::LogIfError(user_entrypoint_function)) {
     FML_LOG(ERROR) << "Could not resolve main entrypoint function.";

@@ -25,6 +25,7 @@
 #include "flutter/shell/platform/darwin/ios/framework/Source/platform_message_response_darwin.h"
 #include "flutter/shell/platform/darwin/ios/ios_surface.h"
 #include "flutter/shell/platform/darwin/ios/platform_view_ios.h"
+#include "flutter/jsbinding/GBridge.h"
 
 @interface FlutterEngine () <FlutterTextInputDelegate>
 // Maintains a dictionary of plugin names that have registered with the engine.  Used by
