@@ -27,7 +27,7 @@ Kraken Engine
     `gclient sync`
     此命令将下载Engine以及所有三方依赖，耗时可能比较久，公司网络尚可以接受，非公司网络请开加速。
 
-3. 覆盖Kraken Engine(可选)
+3. Kraken Engine仓库检出(可选)
     2执行成功后，3级目录应该如下所示
     ```
     ├── engine
@@ -39,7 +39,7 @@ Kraken Engine
     │   ├── ├──  tools
     │   ├── ├──  …
     ```
-    其中src/flutter、third_party中的依赖库都是gclient拉取的对应仓库对应commit的源码。如果需要对Engine本身进行维护，找到对应git@gitlab.alibaba-inc.com:kraken/flutter-engine.git对应的commit，覆盖src/flutter。下面就可以直接在src/flutter下进行修改并提交。
+    其中src/flutter、third_party中的依赖库都是gclient拉取的对应仓库对应commit的源码。如果需要对Engine本身进行维护，检出对应的commit的分支。下面就可以直接在src/flutter下进行修改并提交。
 
 # Engine编译
 以iOS为例
