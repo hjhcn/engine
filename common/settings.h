@@ -123,8 +123,7 @@ struct Settings {
 
   //Kraken: 增加prepare/runapp分别在Dart初始化和执行main时回调，调用逻辑在dart_isolate.cc中
   fml::closure root_isolate_prepare_callback;
-  fml::closure root_isolate_runapp_callback;
-  fml::closure root_isolate_native_callback;
+  std::function<void(const std::string&)> dart_to_js_callback;
 
   // The callback made on the UI thread in an isolate scope when the engine
   // detects that the framework is idle. The VM also uses this time to perform

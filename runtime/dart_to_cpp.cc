@@ -25,18 +25,17 @@ using tonic::ToDart;
 namespace Kraken {
   
   static Dart_Handle getKrakenLirary() {
-    static Dart_Handle s = Dart_LookupLibrary(tonic::ToDart("package:kraken/main.dart"));
+    static Dart_Handle s = Dart_LookupLibrary(tonic::ToDart("package:kraken/hooks.dart"));
     return s;
   }
   
   namespace {
-    static fml::closure root_isolate_native_callback_;
-    void SystemRand(Dart_NativeArguments args) {
-      Dart_Handle result = Dart_NewInteger(5234);
-      Dart_SetReturnValue(args, result);
-      if (root_isolate_native_callback_) {
-        printf("-----native callback----\n");
-        root_isolate_native_callback_();
+    static std::function<void(const std::string&)> dart_to_js_callback_;
+    void KrakenCallJS(Dart_NativeArguments args) {
+      if (dart_to_js_callback_) {
+        Dart_Handle exception = nullptr;
+        const std::string data = tonic::DartConverter<std::string>::FromArguments(args, 0, exception);
+        dart_to_js_callback_(data);
       }
     }
     
@@ -57,9 +56,9 @@ namespace Kraken {
   void DartToCpp::InitBinding(const flutter::Settings& settings) {
     if (!g_natives) {
       g_natives = new tonic::DartLibraryNatives();
-      root_isolate_native_callback_ = settings.root_isolate_native_callback;
+      dart_to_js_callback_ = settings.dart_to_js_callback;
       g_natives->Register({
-        {"SystemRand", SystemRand, 0, true},
+        {"krakenCallJS", KrakenCallJS, 1, true},
       });
       Dart_Handle result = Dart_SetNativeResolver(getKrakenLirary(), GetNativeFunction, GetSymbol);
       if (Dart_IsError(result)) {
