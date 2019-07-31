@@ -348,9 +348,6 @@
     Kraken::DartToCpp::InitBinding(settings);
     Kraken::GBridge::sharedInstance()->evaluate("kraken.setCallback(()=>{kraken.log('---callback call----')});kraken.runApp();");
   };
-//  settings.root_isolate_runapp_callback = []() {
-//    Kraken::GBridge::sharedInstance()->evaluate("kraken.setCallback(()=>{kraken.log('---callback call----')});kraken.runApp();");
-//  };
 
   const auto threadLabel = [NSString stringWithFormat:@"%@.%zu", _labelPrefix, shellCount++];
   FML_DLOG(INFO) << "Creating threadHost for " << threadLabel.UTF8String;

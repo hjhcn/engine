@@ -26,7 +26,7 @@ namespace Kraken {
      * name: dart方法
      * arg: 参数，所有参数在js端封装成json字符串
      */
-    static void callDartFromCpp(const char* name, std::string arg);
+    static void invokeDartFromCpp(const char* name, std::string arg);
     
   private:
     FML_DISALLOW_IMPLICIT_CONSTRUCTORS(DartToCpp);

@@ -53,12 +53,12 @@ JSValueRef func_log(JSContextRef ctx, JSObjectRef function, JSObjectRef object, 
 }
 
 JSValueRef func_runApp(JSContextRef ctx, JSObjectRef function, JSObjectRef object, size_t argc, const JSValueRef argv[], JSValueRef *exception ) {
-  DartToCpp::callDartFromCpp("runKraken", "");
+  DartToCpp::invokeDartFromCpp("runKraken", "");
   return JSValueMakeUndefined(ctx);
 }
 
 JSValueRef func_rebuild(JSContextRef ctx, JSObjectRef function, JSObjectRef object, size_t argc, const JSValueRef argv[], JSValueRef *exception ) {
-  DartToCpp::callDartFromCpp("rebuildKraken", "");
+  DartToCpp::invokeDartFromCpp("rebuildKraken", "");
   return JSValueMakeUndefined(ctx);
 }
 

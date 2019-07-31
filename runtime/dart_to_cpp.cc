@@ -68,7 +68,7 @@ namespace Kraken {
     }
   }
   
-  void DartToCpp::callDartFromCpp(const char* name, std::string arg) {
+  void DartToCpp::invokeDartFromCpp(const char* name, std::string arg) {
     tonic::LogIfError(tonic::DartInvokeField(getKrakenLirary(), name, {}));
   }
 

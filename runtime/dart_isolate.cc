@@ -452,8 +452,7 @@ bool DartIsolate::MarkIsolateRunnable() {
 
 FML_WARN_UNUSED_RESULT
 static bool InvokeMainEntrypoint(Dart_Handle user_entrypoint_function,
-                                 Dart_Handle args,
-                                 const Settings& settings/* Kraken: 增加settings参数 */) {
+                                 Dart_Handle args) {
   if (tonic::LogIfError(user_entrypoint_function)) {
     FML_LOG(ERROR) << "Could not resolve main entrypoint function.";
     return false;
@@ -467,18 +466,13 @@ static bool InvokeMainEntrypoint(Dart_Handle user_entrypoint_function,
     FML_LOG(ERROR) << "Could not resolve main entrypoint trampoline.";
     return false;
   }
-  
-  //Kraken: runapp回调代替dart:ui _runMainZoned
-  //_runMainZoned最终调用Dart snapshot main入口，而Kraken采用JS启动runApp入口即可
-  if (settings.root_isolate_runapp_callback) {
-     settings.root_isolate_runapp_callback();
-  }     
-  // if (tonic::LogIfError(tonic::DartInvokeField(
-  //         Dart_LookupLibrary(tonic::ToDart("dart:ui")), "_runMainZoned",
-  //         {start_main_isolate_function, user_entrypoint_function, args}))) {
-  //   FML_LOG(ERROR) << "Could not invoke the main entrypoint.";
-  //   return false;
-  // }
+
+  if (tonic::LogIfError(tonic::DartInvokeField(
+          Dart_LookupLibrary(tonic::ToDart("dart:ui")), "_runMainZoned",
+          {start_main_isolate_function, user_entrypoint_function, args}))) {
+    FML_LOG(ERROR) << "Could not invoke the main entrypoint.";
+    return false;
+  }
 
   return true;
 }
@@ -498,9 +492,8 @@ bool DartIsolate::Run(const std::string& entrypoint_name,
       Dart_GetField(Dart_RootLibrary(), tonic::ToDart(entrypoint_name.c_str()));
 
   auto entrypoint_args = tonic::ToDart(args);
-              
-  //Kraken: 透传Settings
-  if (!InvokeMainEntrypoint(user_entrypoint_function, entrypoint_args, this->GetSettings())) {
+
+  if (!InvokeMainEntrypoint(user_entrypoint_function, entrypoint_args)) {
     return false;
   }
 
@@ -530,9 +523,8 @@ bool DartIsolate::RunFromLibrary(const std::string& library_name,
                     tonic::ToDart(entrypoint_name.c_str()));
 
   auto entrypoint_args = tonic::ToDart(args);
-              
-  //Kraken: 透传Settings
-  if (!InvokeMainEntrypoint(user_entrypoint_function, entrypoint_args, this->GetSettings())) {
+
+  if (!InvokeMainEntrypoint(user_entrypoint_function, entrypoint_args)) {
     return false;
   }
 
