@@ -13,7 +13,6 @@
 #include "third_party/tonic/dart_microtask_queue.h"
 #include "third_party/tonic/logging/dart_invoke.h"
 #include "third_party/tonic/typed_data/dart_byte_data.h"
-//#include "flutter/jsbinding/GBridge.h"
 
 namespace flutter {
 namespace {
@@ -26,10 +25,6 @@ void DefaultRouteName(Dart_NativeArguments args) {
 
 void ScheduleFrame(Dart_NativeArguments args) {
   UIDartState::Current()->window()->client()->ScheduleFrame();
-}
-  
-void RunJS(Dart_NativeArguments args) {
-//  Kraken::GBridge::sharedInstance()->invokeKrakenCallback(0, {});
 }
 
 void Render(Dart_NativeArguments args) {
@@ -358,7 +353,6 @@ void Window::RegisterNatives(tonic::DartLibraryNatives* natives) {
       {"Window_updateSemantics", UpdateSemantics, 2, true},
       {"Window_setIsolateDebugName", SetIsolateDebugName, 2, true},
       {"Window_reportUnhandledException", ReportUnhandledException, 2, true},
-      {"Window_runJS", RunJS, 1, true},
   });
 }
 

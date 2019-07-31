@@ -839,7 +839,6 @@ class Window {
   ///  * [SchedulerBinding], the Flutter framework class which manages the
   ///    scheduling of frames.
   void scheduleFrame() native 'Window_scheduleFrame';
-  void runJS() native 'Window_runJS';
 
   /// Updates the application's rendering on the GPU with the newly provided
   /// [Scene]. This function must be called within the scope of the
