@@ -26,6 +26,7 @@
 #include "flutter/shell/platform/darwin/ios/ios_surface.h"
 #include "flutter/shell/platform/darwin/ios/platform_view_ios.h"
 #include "flutter/jsbinding/GBridge.h"
+#include "flutter/runtime/dart_to_cpp.h"
 
 @interface FlutterEngine () <FlutterTextInputDelegate>
 // Maintains a dictionary of plugin names that have registered with the engine.  Used by
@@ -338,10 +339,18 @@
   settings.root_isolate_prepare_callback = []() {
     Kraken::GBridge::sharedInstance()->Init();
   };
-  //Kraken: hook实现，业务代码执行
-  settings.root_isolate_runapp_callback = []() {
+  //Kraken: hook实现，回调注入&业务代码执行
+  settings.root_isolate_native_callback = []() {
+    NSLog(@"+++++native++++callback");
+  };
+  //Kraken: hook实现，回调注入&业务代码执行
+  settings.root_isolate_create_callback = [settings]() {
+    Kraken::DartToCpp::InitBinding(settings);
     Kraken::GBridge::sharedInstance()->evaluate("kraken.setCallback(()=>{kraken.log('---callback call----')});kraken.runApp();");
   };
+//  settings.root_isolate_runapp_callback = []() {
+//    Kraken::GBridge::sharedInstance()->evaluate("kraken.setCallback(()=>{kraken.log('---callback call----')});kraken.runApp();");
+//  };
 
   const auto threadLabel = [NSString stringWithFormat:@"%@.%zu", _labelPrefix, shellCount++];
   FML_DLOG(INFO) << "Creating threadHost for " << threadLabel.UTF8String;

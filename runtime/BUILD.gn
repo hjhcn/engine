@@ -40,6 +40,8 @@ group("libdart") {
 
 source_set("runtime") {
   sources = [
+    "dart_to_cpp.cc",
+    "dart_to_cpp.h",
     "dart_isolate.cc",
     "dart_isolate.h",
     "dart_service_isolate.cc",
@@ -73,7 +75,6 @@ source_set("runtime") {
     "$flutter_root/lib/io",
     "$flutter_root/lib/ui",
     "$flutter_root/third_party/txt",
-    "$flutter_root/jsbinding",
     "//third_party/dart/runtime:dart_api",
     "//third_party/dart/runtime/bin:dart_io_api",
     "//third_party/skia",

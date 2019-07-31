@@ -13,7 +13,7 @@
 #include "third_party/tonic/dart_microtask_queue.h"
 #include "third_party/tonic/logging/dart_invoke.h"
 #include "third_party/tonic/typed_data/dart_byte_data.h"
-#include "flutter/jsbinding/GBridge.h"
+//#include "flutter/jsbinding/GBridge.h"
 
 namespace flutter {
 namespace {
@@ -29,7 +29,7 @@ void ScheduleFrame(Dart_NativeArguments args) {
 }
   
 void RunJS(Dart_NativeArguments args) {
-  Kraken::GBridge::sharedInstance()->invokeKrakenCallback(0, {});
+//  Kraken::GBridge::sharedInstance()->invokeKrakenCallback(0, {});
 }
 
 void Render(Dart_NativeArguments args) {

@@ -15,5 +15,6 @@ source_set("jsbinding") {
 
   deps = [
     "//third_party/tonic",
+    "$flutter_root/runtime",
   ]
 }

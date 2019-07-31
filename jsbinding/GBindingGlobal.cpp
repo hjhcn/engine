@@ -7,12 +7,7 @@
 //
 
 #include "GBindingGlobal.h"
-#include "third_party/tonic/converter/dart_converter.h"
-#include "third_party/tonic/dart_args.h"
-#include "third_party/tonic/dart_library_natives.h"
-#include "third_party/tonic/dart_microtask_queue.h"
-#include "third_party/tonic/logging/dart_invoke.h"
-#include "third_party/tonic/typed_data/dart_byte_data.h"
+#include "flutter/runtime/dart_to_cpp.h"
 #include "GBindingConvertor.h"
 
 #define GBINDING_CONSOLE_CLASSNAME "kraken"
@@ -58,10 +53,12 @@ JSValueRef func_log(JSContextRef ctx, JSObjectRef function, JSObjectRef object, 
 }
 
 JSValueRef func_runApp(JSContextRef ctx, JSObjectRef function, JSObjectRef object, size_t argc, const JSValueRef argv[], JSValueRef *exception ) {
-  
-  Dart_Handle library = Dart_LookupLibrary(tonic::ToDart("package:kraken/main.dart"));
-  tonic::LogIfError(tonic::DartInvokeField(library, "runKraken", {}));
-  
+  DartToCpp::callDartFromCpp("runKraken", "");
+  return JSValueMakeUndefined(ctx);
+}
+
+JSValueRef func_rebuild(JSContextRef ctx, JSObjectRef function, JSObjectRef object, size_t argc, const JSValueRef argv[], JSValueRef *exception ) {
+  DartToCpp::callDartFromCpp("rebuildKraken", "");
   return JSValueMakeUndefined(ctx);
 }
 
@@ -78,6 +75,7 @@ JSClassRef GBindingGlobal::createJSClass() {
     JSStaticFunction functions[] = {
         G_STATIC_FUNCTION(log)
         G_STATIC_FUNCTION(runApp)
+        G_STATIC_FUNCTION(rebuild)
         G_STATIC_FUNCTION(setCallback)
         G_STATIC_FUNCTION_NULL
     };
