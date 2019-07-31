@@ -38,7 +38,7 @@ void GBridge::Uninit() {
     delete m_global;
 }
 
-JSValueRef GBridge::evaluate(std::string script) {
+JSValueRef GBridge::evaluate(const std::string& script) {
     
     if(script.length() == 0 ) {
         printf("script is NULL\n");

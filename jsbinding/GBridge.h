@@ -24,7 +24,7 @@ namespace Kraken {
         ~GBridge();
         void Init();
         void Uninit();
-        JSValueRef evaluate(std::string script);
+        JSValueRef evaluate(const std::string& script);
         
         JSObjectRef createJSObject(GBinding *binding, size_t argc, const JSValueRef *argv);
         JSValueRef invokeFunction(JSObjectRef funcObject, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[]);

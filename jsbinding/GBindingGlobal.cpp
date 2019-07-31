@@ -53,7 +53,10 @@ JSValueRef func_log(JSContextRef ctx, JSObjectRef function, JSObjectRef object, 
 }
 
 JSValueRef func_runApp(JSContextRef ctx, JSObjectRef function, JSObjectRef object, size_t argc, const JSValueRef argv[], JSValueRef *exception ) {
-  DartToCpp::invokeDartFromCpp("runKraken", "");
+  if (argc > 0) {
+    std::string widgetData = JSValueToString(ctx, argv[0]);
+    DartToCpp::invokeDartFromCpp("runKraken", widgetData);
+  }
   return JSValueMakeUndefined(ctx);
 }
 
