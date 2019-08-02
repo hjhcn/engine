@@ -20,6 +20,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <cstring>
 
 // HACK: for reading pattern file
 #include <fcntl.h>
