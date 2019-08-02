@@ -9,6 +9,7 @@
 #include <mutex>
 #include <set>
 #include <string>
+#include <memory>
 
 #include "flutter/fml/compiler_specific.h"
 #include "flutter/fml/synchronization/thread_annotations.h"

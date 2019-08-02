@@ -8,6 +8,7 @@
 #include <map>
 #include <set>
 #include <string>
+#include <memory>
 
 #include "flutter/fml/compiler_specific.h"
 #include "flutter/fml/macros.h"

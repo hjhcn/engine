@@ -6,7 +6,7 @@
 
 #define TRACE_EVENT_HIDE_MACROS
 #include <vector>
-
+#include <string.h>
 #include "flutter/fml/logging.h"
 #include "flutter/fml/trace_event.h"
 #include "third_party/dart/runtime/include/dart_tools_api.h"
@@ -114,6 +114,7 @@ bool enableSkiaTracingCallback(const char* method,
                                intptr_t num_params,
                                void* user_data,
                                const char** json_object) {
+  using namespace std;                               
   FlutterEventTracer* tracer = static_cast<FlutterEventTracer*>(user_data);
   tracer->enable();
   *json_object = strdup("{\"type\":\"Success\"}");
