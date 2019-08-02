@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <cstring>
 
 #include "flutter/fml/build_config.h"
 #include "flutter/fml/log_settings.h"
