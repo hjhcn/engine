@@ -334,20 +334,6 @@
     settings.advisory_script_entrypoint = std::string("main");
     settings.advisory_script_uri = std::string("main.dart");
   }
-    
-  //Kraken: hook实现，JS环境初始化
-  settings.root_isolate_prepare_callback = []() {
-    Kraken::GBridge::sharedInstance()->Init();
-  };
-  //Kraken: hook实现，Dart回调JS
-  settings.dart_to_js_callback = [](const std::string& data) {
-    NSLog(@"dart_to_js_callback data:\n%s", data.c_str());
-  };
-  //Kraken: hook实现，回调注入&业务代码执行
-  settings.root_isolate_create_callback = [settings]() {
-    Kraken::DartToCpp::InitBinding(settings);
-  Kraken::GBridge::sharedInstance()->evaluate("kraken.runApp('{\"name\":\"Index\",\"className\":\"MXJSWidget\",\"widgetID\":\"12\",\"buildWidgetDataSeq\":\"3\",\"navPushingWidgetID\":\"\",\"widgetData\":{\"className\":\"MaterialApp\",\"home\":{\"className\":\"Scaffold\",\"body\":{\"className\":\"Center\",\"child\":{\"key\":\"IdeaPage\",\"name\":\"IdeaPage\",\"className\":\"MXJSWidget\",\"widgetID\":\"25\",\"buildWidgetDataSeq\":\"1\",\"navPushingWidgetID\":\"\",\"widgetData\":{\"className\":\"MaterialApp\",\"home\":{\"className\":\"Scaffold\",\"appBar\":{\"className\":\"AppBar\",\"title\":{\"className\":\"Center\",\"child\":{\"className\":\"Text\",\"data\":\"\u60f3\u6cd5\"}}},\"body\":{\"className\":\"Center\",\"child\":{\"className\":\"Text\",\"data\":\"\u52aa\u529b\u5f00\u53d1\u4e2d~\"}}}}}},\"bottomNavigationBar\":{\"className\":\"BottomNavigationBar\",\"items\":[{\"className\":\"BottomNavigationBarItem\",\"icon\":{\"className\":\"Icon\",\"icon\":{\"className\":\"IconData\",\"codePoint\":59485,\"fontFamily\":\"MaterialIcons\"}},\"title\":{\"className\":\"Text\",\"data\":\"\u9996\u9875\"}},{\"className\":\"BottomNavigationBarItem\",\"icon\":{\"className\":\"Icon\",\"icon\":{\"className\":\"IconData\",\"codePoint\":60221,\"fontFamily\":\"MaterialIcons\"}},\"title\":{\"className\":\"Text\",\"data\":\"\u60f3\u6cd5\"}},{\"className\":\"BottomNavigationBarItem\",\"icon\":{\"className\":\"Icon\",\"icon\":{\"className\":\"IconData\",\"codePoint\":57347,\"fontFamily\":\"MaterialIcons\"}},\"title\":{\"className\":\"Text\",\"data\":\"\u901a\u77e5\"}},{\"className\":\"BottomNavigationBarItem\",\"icon\":{\"className\":\"Icon\",\"icon\":{\"className\":\"IconData\",\"codePoint\":59558,\"fontFamily\":\"MaterialIcons\"}},\"title\":{\"className\":\"Text\",\"data\":\"\u6211\u7684\"}}],\"onTap\":\"12/69\",\"currentIndex\":1,\"type\":\"BottomNavigationBarType.fixed\",\"fixedColor\":{\"className\":\"Color\",\"value\":4280391411}}}}}');");
-  };
 
   const auto threadLabel = [NSString stringWithFormat:@"%@.%zu", _labelPrefix, shellCount++];
   FML_DLOG(INFO) << "Creating threadHost for " << threadLabel.UTF8String;
@@ -388,6 +374,7 @@
                                       _threadHost.io_thread->GetTaskRunner()           // io
     );
     // Create the shell. This is a blocking operation.
+    [self settinsAddHook:task_runners settings:settings];
     _shell = flutter::Shell::Create(std::move(task_runners),  // task runners
                                     std::move(settings),      // settings
                                     on_create_platform_view,  // platform view creation
@@ -401,6 +388,7 @@
                                       _threadHost.io_thread->GetTaskRunner()           // io
     );
     // Create the shell. This is a blocking operation.
+    [self settinsAddHook:task_runners settings:settings];
     _shell = flutter::Shell::Create(std::move(task_runners),  // task runners
                                     std::move(settings),      // settings
                                     on_create_platform_view,  // platform view creation
@@ -421,6 +409,36 @@
   }
 
   return _shell != nullptr;
+}
+
+- (void)settinsAddHook:(flutter::TaskRunners)task_runners settings:(flutter::Settings&)settings {
+  //Kraken: hook实现，JS环境初始化
+  settings.root_isolate_prepare_callback = []() {
+    Kraken::GBridge::sharedInstance()->Init();
+  };
+  //Kraken: hook实现，Dart回调JS
+  settings.dart_to_js_callback = [](const std::string& data) {
+    NSLog(@"dart_to_js_callback data:\n%s", data.c_str());
+  };
+  //Kraken: hook实现，回调注入&业务代码执行
+  settings.root_isolate_create_callback = [settings, task_runners]() {
+    
+    NSURL *url = [NSURL URLWithString:@"http://30.10.92.0:4444/test/pesto.js"];
+
+    NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithURL:url completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+      NSString *js = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+
+      task_runners.GetUITaskRunner()->PostTask(
+                                               [js]() {
+
+                                                 NSLog(@"%@", js);
+                                                 Kraken::GBridge::sharedInstance()->evaluate([js UTF8String]);
+                                               });
+
+    }];
+    [task resume];
+    
+  };
 }
 
 - (BOOL)runWithEntrypoint:(NSString*)entrypoint libraryURI:(NSString*)libraryURI {

@@ -19,14 +19,16 @@
 #include "third_party/tonic/scopes/dart_api_scope.h"
 #include "third_party/tonic/scopes/dart_isolate_scope.h"
 #include "third_party/tonic/dart_library_natives.h"
+#include "flutter/runtime/dart_isolate.h"
 
-using tonic::ToDart;
+using namespace tonic;
 
 namespace Kraken {
+  static DartPersistentValue library_;
   
-  static Dart_Handle getKrakenLirary() {
-    static Dart_Handle s = Dart_LookupLibrary(tonic::ToDart("package:kraken/hooks.dart"));
-    return s;
+  void DartToCpp::DidCreateIsolate() {
+    library_.Set(DartState::Current(),
+                 Dart_LookupLibrary(ToDart("package:kraken/hooks.dart")));
   }
   
   namespace {
@@ -34,12 +36,12 @@ namespace Kraken {
     void KrakenCallJS(Dart_NativeArguments args) {
       if (dart_to_js_callback_) {
         Dart_Handle exception = nullptr;
-        const std::string data = tonic::DartConverter<std::string>::FromArguments(args, 0, exception);
+        const std::string data = DartConverter<std::string>::FromArguments(args, 0, exception);
         dart_to_js_callback_(data);
       }
     }
     
-    static tonic::DartLibraryNatives* g_natives;
+    static DartLibraryNatives* g_natives;
     
     Dart_NativeFunction GetNativeFunction(Dart_Handle name,
     int argument_count,
@@ -55,12 +57,12 @@ namespace Kraken {
   
   void DartToCpp::InitBinding(const flutter::Settings& settings) {
     if (!g_natives) {
-      g_natives = new tonic::DartLibraryNatives();
+      g_natives = new DartLibraryNatives();
       dart_to_js_callback_ = settings.dart_to_js_callback;
       g_natives->Register({
-        {"krakenCallJS", KrakenCallJS, 1, true},
+        {"Kraken_callJS", KrakenCallJS, 1, true},
       });
-      Dart_Handle result = Dart_SetNativeResolver(getKrakenLirary(), GetNativeFunction, GetSymbol);
+      Dart_Handle result = Dart_SetNativeResolver(library_.value(), GetNativeFunction, GetSymbol);
       if (Dart_IsError(result)) {
         Dart_PropagateError(result);
       }
@@ -68,10 +70,13 @@ namespace Kraken {
   }
   
   void DartToCpp::invokeDartFromCpp(const char* name, const std::string& arg) {
-    tonic::LogIfError(tonic::DartInvokeField(getKrakenLirary(), name, {
-      tonic::StdStringToDart(arg),
+    std::shared_ptr<tonic::DartState> dart_state = library_.dart_state().lock();
+    if (!dart_state)
+      return;
+    tonic::DartState::Scope scope(dart_state);
+    LogIfError(DartInvokeField(library_.value(), name, {
+      StdStringToDart(arg),
     }));
   }
-
   
 }

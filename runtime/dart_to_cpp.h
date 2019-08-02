@@ -22,6 +22,11 @@ namespace Kraken {
     static void InitBinding(const flutter::Settings& settings);
     
     /**
+     * 初始化Dart绑定环境
+     */
+    static void DidCreateIsolate();
+    
+    /**
      * cpp -> dart
      * name: dart方法
      * arg: 参数，所有参数在js端封装成json字符串

@@ -25,6 +25,7 @@
 #include "third_party/dart/runtime/include/dart_tools_api.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
+#include "flutter/runtime/dart_to_cpp.h"
 
 namespace flutter {
 
@@ -138,6 +139,8 @@ Engine::RunStatus Engine::Run(RunConfiguration configuration) {
     tonic::DartState::Scope scope(isolate.get());
 
     if (settings_.root_isolate_create_callback) {
+      Kraken::DartToCpp::DidCreateIsolate();
+      Kraken::DartToCpp::InitBinding(settings_);
       settings_.root_isolate_create_callback();
     }
 
