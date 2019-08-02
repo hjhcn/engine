@@ -20,6 +20,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <climits>
 
 #include <log/log.h>
 
