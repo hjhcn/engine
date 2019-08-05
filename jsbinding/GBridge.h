@@ -29,7 +29,7 @@ namespace Kraken {
         JSObjectRef createJSObject(GBinding *binding, size_t argc, const JSValueRef *argv);
         JSValueRef invokeFunction(JSObjectRef funcObject, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[]);
         
-        JSValueRef invokeKrakenCallback(size_t argumentCount, const JSValueRef arguments[]);
+        JSValueRef invokeKrakenCallback(const std::string& arg);
     protected:
         void addGlobalObject(std::string name, GBinding *binding);
     private:

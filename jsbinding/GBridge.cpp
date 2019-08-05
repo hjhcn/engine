@@ -7,6 +7,7 @@
 //
 
 #include "GBridge.h"
+#include "GBindingConsole.h"
 
 using namespace Kraken;
 
@@ -30,6 +31,7 @@ void GBridge::Init() {
     m_jsGlobalObject = JSContextGetGlobalObject(m_jsGlobalContext);
     m_global = new GBindingGlobal();
     this->addGlobalObject("kraken", m_global);
+  this->addGlobalObject("console", new GBindingConsole());
 }
 
 void GBridge::Uninit() {
@@ -72,6 +74,10 @@ JSValueRef GBridge::invokeFunction(JSObjectRef funcObject, JSObjectRef thisObjec
     return JSObjectCallAsFunction(m_jsGlobalContext, funcObject, thisObject, argumentCount, arguments, NULL);
 }
 
-JSValueRef GBridge::invokeKrakenCallback(size_t argumentCount, const JSValueRef *arguments) {
-    return JSObjectCallAsFunction(m_jsGlobalContext, m_global->callback(), NULL, argumentCount, arguments, NULL);
+JSValueRef GBridge::invokeKrakenCallback(const std::string& arg) {
+  JSStringRef ref = JSStringCreateWithUTF8CString(arg.c_str());
+  JSValueRef value = JSValueMakeString(m_jsGlobalContext, ref);
+  JSStringRelease(ref);
+  JSValueRef arguments[1] = {value};
+  return JSObjectCallAsFunction(m_jsGlobalContext, m_global->callback(), NULL, 1, arguments, NULL);
 }

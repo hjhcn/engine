@@ -418,7 +418,7 @@
   };
   //Kraken: hook实现，Dart回调JS
   settings.dart_to_js_callback = [](const std::string& data) {
-    NSLog(@"dart_to_js_callback data:\n%s", data.c_str());
+    Kraken::GBridge::sharedInstance()->invokeKrakenCallback(data);
   };
   //Kraken: hook实现，回调注入&业务代码执行
   settings.root_isolate_create_callback = [settings, task_runners]() {
@@ -430,8 +430,6 @@
 
       task_runners.GetUITaskRunner()->PostTask(
                                                [js]() {
-
-                                                 NSLog(@"%@", js);
                                                  Kraken::GBridge::sharedInstance()->evaluate([js UTF8String]);
                                                });
 
