@@ -75,9 +75,5 @@ JSValueRef GBridge::invokeFunction(JSObjectRef funcObject, JSObjectRef thisObjec
 }
 
 JSValueRef GBridge::invokeKrakenCallback(const std::string& arg) {
-  JSStringRef ref = JSStringCreateWithUTF8CString(arg.c_str());
-  JSValueRef value = JSValueMakeString(m_jsGlobalContext, ref);
-  JSStringRelease(ref);
-  JSValueRef arguments[1] = {value};
-  return JSObjectCallAsFunction(m_jsGlobalContext, m_global->callback(), NULL, 1, arguments, NULL);
+  return m_global->invokeKrakenCallback(m_jsGlobalContext, arg);
 }

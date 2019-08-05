@@ -20,8 +20,12 @@ namespace Kraken {
         
         JSObjectRef callback(){ return m_callback;};
         void setCallback(JSObjectRef ref){m_callback = ref;};
+        JSObjectRef jsApp(){ return m_jsApp;};
+        void setJSApp(JSObjectRef ref){m_jsApp = ref;};
+        JSValueRef invokeKrakenCallback(JSContextRef ctx, const std::string& arg);
     private:
         JSObjectRef m_callback;
+        JSObjectRef m_jsApp;
     };
 }
 

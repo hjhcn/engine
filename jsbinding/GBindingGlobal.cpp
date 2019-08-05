@@ -27,7 +27,10 @@ JSValueRef func_runApp(JSContextRef ctx, JSObjectRef function, JSObjectRef objec
 }
 
 JSValueRef func_rebuild(JSContextRef ctx, JSObjectRef function, JSObjectRef object, size_t argc, const JSValueRef argv[], JSValueRef *exception ) {
-  DartToCpp::invokeDartFromCpp("rebuildKraken", "");
+  if (argc > 0) {
+    std::string widgetData = JSValueToString(ctx, argv[0]);
+    DartToCpp::invokeDartFromCpp("rebuildKraken", widgetData);
+  }
   return JSValueMakeUndefined(ctx);
 }
 
@@ -39,14 +42,40 @@ JSValueRef func_setCallback(JSContextRef ctx, JSObjectRef function, JSObjectRef 
     return JSValueMakeUndefined(ctx);
 }
 
+JSValueRef func_setJSApp(JSContextRef ctx, JSObjectRef function, JSObjectRef object, size_t argc, const JSValueRef argv[], JSValueRef *exception ) {
+  G_BINDING_FUNCTION_PREPARE(GBindingGlobal, 1)
+  if (argc == 1) {
+    thisObject->setJSApp(JSValueToObject(ctx, argv[0], NULL));
+    
+    JSStringRef name = JSStringCreateWithUTF8CString("nativeCall");
+    JSValueRef function = JSObjectGetProperty(ctx, thisObject->jsApp(), name, NULL);
+    JSStringRelease(name);
+    thisObject->setCallback(JSValueToObject(ctx, function, NULL));
+    
+  }
+  return JSValueMakeUndefined(ctx);
+}
+
 JSClassRef GBindingGlobal::createJSClass() {
     JSClassDefinition classDefinition = CreateBindingClassDefinication(GBINDING_GLOBAL_CLASSNAME);
     JSStaticFunction functions[] = {
         G_STATIC_FUNCTION(runApp)
         G_STATIC_FUNCTION(rebuild)
         G_STATIC_FUNCTION(setCallback)
+        G_STATIC_FUNCTION(setJSApp)
         G_STATIC_FUNCTION_NULL
     };
     classDefinition.staticFunctions = functions;
     return JSClassCreate(&classDefinition);
 }
+
+JSValueRef GBindingGlobal::invokeKrakenCallback(JSContextRef ctx, const std::string& arg) {
+  
+  JSStringRef ref = JSStringCreateWithUTF8CString(arg.c_str());
+  JSValueRef value = JSValueMakeString(ctx, ref);
+  JSStringRelease(ref);
+  JSValueRef arguments[1] = {value};
+  return JSObjectCallAsFunction(ctx, m_callback, m_jsApp, 1, arguments, NULL);
+  
+}
+
