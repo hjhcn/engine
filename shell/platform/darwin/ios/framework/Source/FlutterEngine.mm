@@ -423,7 +423,7 @@
   //Kraken: hook实现，回调注入&业务代码执行
   settings.root_isolate_create_callback = [settings, task_runners]() {
     
-    NSURL *url = [NSURL URLWithString:@"http://30.10.92.0:4444/test/pesto.js"];
+    NSURL *url = [NSURL URLWithString:@"http://30.10.92.59:4444/test/pesto.js"];
 
     NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithURL:url completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
       NSString *js = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];

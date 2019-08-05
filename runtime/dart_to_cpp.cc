@@ -24,15 +24,14 @@
 using namespace tonic;
 
 namespace Kraken {
-  static DartPersistentValue library_;
-  
-  void DartToCpp::DidCreateIsolate() {
-    library_.Set(DartState::Current(),
-                 Dart_LookupLibrary(ToDart("package:kraken/hooks.dart")));
-  }
   
   namespace {
+    static DartPersistentValue library_;
+    
     static std::function<void(const std::string&)> dart_to_js_callback_;
+    
+    static DartLibraryNatives* g_natives;
+    
     void KrakenCallJS(Dart_NativeArguments args) {
       if (dart_to_js_callback_) {
         Dart_Handle exception = nullptr;
@@ -40,8 +39,6 @@ namespace Kraken {
         dart_to_js_callback_(data);
       }
     }
-    
-    static DartLibraryNatives* g_natives;
     
     Dart_NativeFunction GetNativeFunction(Dart_Handle name,
     int argument_count,
@@ -55,8 +52,20 @@ namespace Kraken {
     
   }
   
+  void DartToCpp::DidCreateIsolate() {
+    library_.Set(DartState::Current(),
+                 Dart_LookupLibrary(ToDart("package:kraken/hooks.dart")));
+  }
+  
+  void DartToCpp::DidDesIsolate() {
+    library_.Clear();
+    delete g_natives;
+    g_natives = NULL;
+  }
+  
   void DartToCpp::InitBinding(const flutter::Settings& settings) {
     if (!g_natives) {
+      //每次都需要binding，因为hooks在root_isolate中
       g_natives = new DartLibraryNatives();
       dart_to_js_callback_ = settings.dart_to_js_callback;
       g_natives->Register({

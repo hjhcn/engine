@@ -27,6 +27,11 @@ namespace Kraken {
     static void DidCreateIsolate();
     
     /**
+     * Dart绑定环境销毁
+     */
+    static void DidDesIsolate();
+    
+    /**
      * cpp -> dart
      * name: dart方法
      * arg: 参数，所有参数在js端封装成json字符串

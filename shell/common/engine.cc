@@ -69,7 +69,9 @@ Engine::Engine(Delegate& delegate,
   );
 }
 
-Engine::~Engine() = default;
+Engine::~Engine() {
+  Kraken::DartToCpp::DidDesIsolate();
+}
 
 float Engine::GetDisplayRefreshRate() const {
   return animator_->GetDisplayRefreshRate();
