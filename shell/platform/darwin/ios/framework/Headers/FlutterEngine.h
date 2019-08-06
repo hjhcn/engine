@@ -237,6 +237,8 @@ FLUTTER_EXPORT
  */
 @property(nonatomic, readonly) NSURL* observatoryUrl;
 
+- (void)postUITask:(void (^)(void))task;
+
 @end
 
 #endif  // FLUTTER_FLUTTERENGINE_H_

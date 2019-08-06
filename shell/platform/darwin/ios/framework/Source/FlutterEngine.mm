@@ -25,8 +25,6 @@
 #include "flutter/shell/platform/darwin/ios/framework/Source/platform_message_response_darwin.h"
 #include "flutter/shell/platform/darwin/ios/ios_surface.h"
 #include "flutter/shell/platform/darwin/ios/platform_view_ios.h"
-#include "flutter/jsbinding/GBridge.h"
-#include "flutter/runtime/dart_to_cpp.h"
 
 @interface FlutterEngine () <FlutterTextInputDelegate>
 // Maintains a dictionary of plugin names that have registered with the engine.  Used by
@@ -334,6 +332,8 @@
     settings.advisory_script_entrypoint = std::string("main");
     settings.advisory_script_uri = std::string("main.dart");
   }
+  //Kraken: 增加hook实现
+  [self settingsAddHook:settings];
 
   const auto threadLabel = [NSString stringWithFormat:@"%@.%zu", _labelPrefix, shellCount++];
   FML_DLOG(INFO) << "Creating threadHost for " << threadLabel.UTF8String;
@@ -374,7 +374,6 @@
                                       _threadHost.io_thread->GetTaskRunner()           // io
     );
     // Create the shell. This is a blocking operation.
-    [self settinsAddHook:task_runners settings:settings];
     _shell = flutter::Shell::Create(std::move(task_runners),  // task runners
                                     std::move(settings),      // settings
                                     on_create_platform_view,  // platform view creation
@@ -388,7 +387,6 @@
                                       _threadHost.io_thread->GetTaskRunner()           // io
     );
     // Create the shell. This is a blocking operation.
-    [self settinsAddHook:task_runners settings:settings];
     _shell = flutter::Shell::Create(std::move(task_runners),  // task runners
                                     std::move(settings),      // settings
                                     on_create_platform_view,  // platform view creation
@@ -411,32 +409,40 @@
   return _shell != nullptr;
 }
 
-- (void)settinsAddHook:(flutter::TaskRunners)task_runners settings:(flutter::Settings&)settings {
+- (void)dart2JS:(NSString *)data {
+  
+}
+
+- (void)isolateCreate {
+  
+}
+
+- (void)settingsAddHook:(flutter::Settings&)settings {
   //Kraken: hook实现，JS环境初始化
+  __unsafe_unretained FlutterEngine* weakSelf = self;
   settings.root_isolate_prepare_callback = []() {
-    Kraken::GBridge::sharedInstance()->Init();
   };
   //Kraken: hook实现，Dart回调JS
-  settings.dart_to_js_callback = [](const std::string& data) {
-    Kraken::GBridge::sharedInstance()->invokeKrakenCallback(data);
+  settings.dart_to_js_callback = [weakSelf](const std::string& data) {
+    [weakSelf dart2JS:[NSString stringWithUTF8String:data.c_str()]];
+//    weakSelf.dart2JSCallback([NSString stringWithUTF8String:data.c_str()]);
   };
   //Kraken: hook实现，回调注入&业务代码执行
-  settings.root_isolate_create_callback = [settings, task_runners]() {
-    
-    NSURL *url = [NSURL URLWithString:@"http://30.10.92.59:4444/test/pesto.js"];
-
-    NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithURL:url completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-      NSString *js = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-
-      task_runners.GetUITaskRunner()->PostTask(
-                                               [js]() {
-                                                 Kraken::GBridge::sharedInstance()->evaluate([js UTF8String]);
-                                               });
-
-    }];
-    [task resume];
-    
+  settings.root_isolate_create_callback = [weakSelf]() {
+//    weakSelf.createCallback(weakSelf);
+    [weakSelf isolateCreate];
   };
+}
+
+/**
+ * 暴露切换UI线程方法
+ */
+- (void)postUITask:(void (^)(void))task {
+  void(^task_)(void) = [task copy];
+  self.shell.GetTaskRunners().GetUITaskRunner()->PostTask(
+                                           [task_]() {
+                                             task_();
+                                           });
 }
 
 - (BOOL)runWithEntrypoint:(NSString*)entrypoint libraryURI:(NSString*)libraryURI {

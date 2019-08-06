@@ -13,7 +13,7 @@
 
 namespace Kraken {
   
-  class DartToCpp {
+  class __attribute__ ((visibility ("default"))) DartToCpp {
   public:
     
     /**
@@ -36,7 +36,7 @@ namespace Kraken {
      * name: dart方法
      * arg: 参数，所有参数在js端封装成json字符串
      */
-    static void invokeDartFromCpp(const char* name, const std::string& arg);
+    __attribute__ ((visibility ("default"))) static void invokeDartFromCpp(const char* name, const std::string& arg);
     
   private:
     FML_DISALLOW_IMPLICIT_CONSTRUCTORS(DartToCpp);
